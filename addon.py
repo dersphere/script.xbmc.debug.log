@@ -52,7 +52,7 @@ class LogUploader(object):
     def upload_file(self, filepath):
         url = 'http://xbmclogs.com/'
         self.__log('reading log...')
-        file_content = open(filepath, 'r').readlines()
+        file_content = open(filepath, 'r').read()
         self.__log('starting upload "%s"...' % filepath)
         post_dict = {'paste_data': file_content,
                      'api_submit': True,
@@ -106,7 +106,6 @@ class LogUploader(object):
         response = urllib2.urlopen(req).read()
         if DEBUG:
             print response
-
 
     def __get_logs(self):
         if sys.platform == 'darwin':
