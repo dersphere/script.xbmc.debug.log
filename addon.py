@@ -112,7 +112,7 @@ class LogUploader(object):
                                            'Library/Logs/xbmc.log')):
                 # we are on OSX or ATV1
                 platform = 'OSX'
-                log_path = os.path.join(os.path.expanduser('~')
+                log_path = os.path.join(os.path.expanduser('~'),
                                         'Library/Logs')
             else:
                 # we are on IOS
