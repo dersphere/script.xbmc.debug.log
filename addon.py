@@ -108,15 +108,18 @@ class LogUploader(object):
 
     def __get_logs(self):
         if sys.platform == 'darwin':
-            if os.path.join(os.path.exists(os.path.expanduser('~'), 'Library', 'Logs', 'xbmc.log')):
+            if os.path.exists(os.path.join(os.path.expanduser('~'),
+                                           'Library/Logs/xbmc.log')):
                 # we are on OSX or ATV1
                 platform = 'OSX'
-                log_path = os.path.join(os.path.expanduser('~'), 'Library', 'Logs')
+                log_path = os.path.join(os.path.expanduser('~')
+                                        'Library/Logs')
             else:
                 # we are on IOS
                 platform = 'IOS'
                 log_path = '/var/mobile/Library/Preferences'
-            crashlog_path = os.path.join(os.path.expanduser('~'), 'Library', 'Logs', 'CrashReporter')
+            crashlog_path = os.path.join(os.path.expanduser('~'),
+                                         'Library/Logs/CrashReporter')
             crashfile_prefix = 'XBMC'
         elif sys.platform.startswith('linux'):
             # we are on Linux
@@ -144,7 +147,8 @@ class LogUploader(object):
                               and s.startswith(crashfile_prefix)]
             if crashlog_files:
                 # we have crashlogs, use the last one by time
-                crashlog_files.sort(key=lambda s: os.path.getmtime(os.path.join(crashlog_path, s)))
+                crashlog_files = self.__sort_files_by_date(crashlog_path,
+                                                           crashlog_files)
                 log_crash = os.path.join(crashlog_path, crashlog_files[-1])
         found_logs = []
         if log and os.path.isfile(log):
@@ -157,10 +161,14 @@ class LogUploader(object):
             found_logs.append({'title': 'crash.log',
                                'path': log_crash})
         return found_logs
-        
+
+    def __sort_files_by_date(path, files):
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(path, f)))
+        return files
+
     def __log(self, msg):
         xbmc.log('%s: %s' % (ADDON_TITLE, msg))
 
 
-if (__name__ == '__main__'):
+if __name__ == '__main__':
     Uploader = LogUploader()
