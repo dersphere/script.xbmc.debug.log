@@ -64,16 +64,15 @@ class LogUploader(object):
         post_data = urllib.urlencode(post_dict)
         req = urllib2.Request(url, post_data)
         response = urllib2.urlopen(req).read()
-        if DEBUG:
-            print response
         self.__log('upload done.')
         r_id = re.compile('<id>([0-9]+)</id>', re.DOTALL)
         m_id = re.search(r_id, response)
-        paste_id = None
         if m_id:
             paste_id = m_id.group(1)
-        self.__log('paste_id=%s' % paste_id)
-        return paste_id
+            self.__log('paste_id=%s' % paste_id)
+            return paste_id
+        else:
+            self.__log('upload failed with response: %s' % repr(response))
 
     def ask_upload(self, logfile):
         Dialog = xbmcgui.Dialog()
