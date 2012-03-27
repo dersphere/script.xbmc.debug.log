@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.xbmc_log_uploader"
+       name="XBMC Log Uploader"
+       version="0.0.1"
+       provider-name="Team-XBMC">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
+  <extension point="xbmc.python.script"
+             library="addon.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Uploads your logs to xbmclogs.com</summary>
+    <description lang="en">This Addon uploads your logs to xbmclogs.com[CR]You will receive an email with seperate links to the uploaded logfiles</description>
+<platform>all</platform>
+  </extension>
+</addon>
