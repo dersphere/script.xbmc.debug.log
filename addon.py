@@ -40,7 +40,7 @@ class LogUploader(object):
 
     def get_settings(self):
         self.email_address = Addon.getSetting('email')
-        self.__log('settings: email address=%s' % self.email_address)
+        self.__log('settings: len(email)=%d' % len(self.email_address))
         self.skip_oldlog = Addon.getSetting('skip_oldlog') == 'true'
         self.__log('settings: skip_oldlog=%s' % self.skip_oldlog)
 
