@@ -162,7 +162,7 @@ class LogUploader(object):
                                'path': log_crash})
         return found_logs
 
-    def __sort_files_by_date(path, files):
+    def __sort_files_by_date(self, path, files):
         files.sort(key=lambda f: os.path.getmtime(os.path.join(path, f)))
         return files
 
