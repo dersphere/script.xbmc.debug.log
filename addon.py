@@ -11,7 +11,7 @@ ADDON_ID = 'script.xbmc_log_uploader'
 Addon = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_TITLE = Addon.getAddonInfo('name')
 
-DEBUG = True
+DEBUG = False
 
 
 class LogUploader(object):
