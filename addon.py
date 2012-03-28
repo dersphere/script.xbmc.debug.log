@@ -97,7 +97,7 @@ class LogUploader(object):
             elif logfile['title'] == 'xbmc.old.log':
                 post_dict['oldlog_id'] = logfile['paste_id']
             elif logfile['title'] == 'crash.log':
-                post_dict['chrashlog_id'] = logfile['paste_id']
+                post_dict['crashlog_id'] = logfile['paste_id']
         post_data = urllib.urlencode(post_dict)
         if DEBUG:
             print post_data
