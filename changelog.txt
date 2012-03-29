@@ -1,2 +1,7 @@
+0.0.5
+ - new icon
+ - improved the dialog
+ - changed the way os-detection works
+ - added German Translation
 0.0.4
  - initial test release
