@@ -107,36 +107,26 @@ class LogUploader(object):
             print response
 
     def __get_logs(self):
-        if sys.platform == 'darwin':
-            if os.path.exists(os.path.join(os.path.expanduser('~'),
-                                           'Library/Logs/xbmc.log')):
-                # we are on OSX or ATV1
-                platform = 'OSX'
-                log_path = os.path.join(os.path.expanduser('~'),
-                                        'Library/Logs')
-            else:
-                # we are on IOS
-                platform = 'IOS'
-                log_path = '/var/mobile/Library/Preferences'
-            crashlog_path = os.path.join(os.path.expanduser('~'),
-                                         'Library/Logs/CrashReporter')
+        if xbmc.getCondVisibility('system.platform.osx'):
+            log_path = os.path.join(os.path.expanduser('~'), 'Library/Logs')
+            crashlog_path = os.path.join(os.path.expanduser('~'), 'Library/Logs/CrashReporter')
             crashfile_prefix = 'XBMC'
-        elif sys.platform.startswith('linux'):
-            # we are on Linux
-            platform = 'Linux'
-            log_path = xbmc.translatePath('special://home/temp')
-            crashlog_path = os.path.expanduser('~')
-            crashfile_prefix = 'xbmc_crashlog'
-        elif sys.platform.startswith('win'):
-            # we are on Windows
-            platform = 'Win'
+        elif xbmc.getCondVisibility('system.platform.ios'):
+            log_path = '/var/mobile/Library/Preferences'
+            crashlog_path = os.path.join(os.path.expanduser('~'), 'Library/Logs/CrashReporter')
+            crashfile_prefix = 'XBMC'
+        elif xbmc.getCondVisibility('system.platform.windows'):
             log_path = xbmc.translatePath('special://home')
             crashlog_path = ''
             crashfile_prefix = ''
+        elif xbmc.getCondVisibility('system.platform.linux'):
+            log_path = xbmc.translatePath('special://home/temp')
+            crashlog_path = os.path.expanduser('~')
+            crashfile_prefix = 'xbmc_crashlog'
         else:
             # we are on an unknown OS and need to fix that here
             raise Exception('UNHANDLED OS')
-        # get filename and path for xbmc.log and xbmc.old.log
+        # get fullpath for xbmc.log and xbmc.old.log
         log = os.path.join(log_path, 'xbmc.log')
         log_old = os.path.join(log_path, 'xbmc.old.log')
         # check for XBMC crashlogs
@@ -146,7 +136,7 @@ class LogUploader(object):
                               if os.path.isfile(os.path.join(crashlog_path, s))
                               and s.startswith(crashfile_prefix)]
             if crashlog_files:
-                # we have crashlogs, use the last one by time
+                # we have crashlogs, get fullpath from the last one by time
                 crashlog_files = self.__sort_files_by_date(crashlog_path,
                                                            crashlog_files)
                 log_crash = os.path.join(crashlog_path, crashlog_files[-1])
