@@ -19,6 +19,8 @@ class LogUploader(object):
     STR_DO_UPLOAD = 30000
     STR_UPLOADED_ID = 30001
     STR_UPLOADED_URL = 30002
+    STR_NO_EMAIL_SET = 30003
+    STR_EMAIL_SENT_TO = 30004
     STR_UPLOAD_LINK = 'http://xbmclogs.com/show.php?id=%s'
 
     def __init__(self):
@@ -76,15 +78,20 @@ class LogUploader(object):
 
     def ask_upload(self, logfile):
         Dialog = xbmcgui.Dialog()
-        msg = Addon.getLocalizedString(self.STR_DO_UPLOAD) % logfile
-        return Dialog.yesno(ADDON_TITLE, msg)
+        msg1 = Addon.getLocalizedString(self.STR_DO_UPLOAD) % logfile
+        if self.email_address:
+            msg2 = (Addon.getLocalizedString(self.STR_EMAIL_SENT_TO)
+                    % self.email_address)
+        else:
+            msg2 = Addon.getLocalizedString(self.STR_NO_EMAIL_SET)
+        return Dialog.yesno(ADDON_TITLE, msg1, '', msg2)
 
     def report_msg(self, paste_id):
         url = self.STR_UPLOAD_LINK % paste_id
         Dialog = xbmcgui.Dialog()
         msg1 = Addon.getLocalizedString(self.STR_UPLOADED_ID) % paste_id
         msg2 = Addon.getLocalizedString(self.STR_UPLOADED_URL) % url
-        return Dialog.ok(ADDON_TITLE, msg1, msg2)
+        return Dialog.ok(ADDON_TITLE, msg1, '', msg2)
 
     def report_mail(self, mail_address, uploaded_logs):
         url = 'http://xbmclogs.com/xbmc-addon.php'
