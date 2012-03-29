@@ -7,7 +7,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 
-ADDON_ID = 'script.xbmc_log_uploader'
+ADDON_ID = 'script.xbmc.debug.log'
 Addon = xbmcaddon.Addon(id=ADDON_ID)
 ADDON_TITLE = Addon.getAddonInfo('name')
 
