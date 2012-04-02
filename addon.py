@@ -116,11 +116,13 @@ class LogUploader(object):
     def __get_logs(self):
         if xbmc.getCondVisibility('system.platform.osx'):
             log_path = os.path.join(os.path.expanduser('~'), 'Library/Logs')
-            crashlog_path = os.path.join(os.path.expanduser('~'), 'Library/Logs/CrashReporter')
+            crashlog_path = os.path.join(os.path.expanduser('~'),
+                                         'Library/Logs/CrashReporter')
             crashfile_prefix = 'XBMC'
         elif xbmc.getCondVisibility('system.platform.ios'):
             log_path = '/var/mobile/Library/Preferences'
-            crashlog_path = os.path.join(os.path.expanduser('~'), 'Library/Logs/CrashReporter')
+            crashlog_path = os.path.join(os.path.expanduser('~'),
+                                         'Library/Logs/CrashReporter')
             crashfile_prefix = 'XBMC'
         elif xbmc.getCondVisibility('system.platform.windows'):
             log_path = xbmc.translatePath('special://home')
