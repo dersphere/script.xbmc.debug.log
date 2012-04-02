@@ -3,16 +3,16 @@
        name="XBMC Log Uploader"
        version="11.0.5"
        provider-name="Team-XBMC">
-  <requires>
-    <import addon="xbmc.python" version="2.0"/>
-  </requires>
-  <extension point="xbmc.python.script"
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+    <extension point="xbmc.python.script"
              library="addon.py"/>
-  <extension point="xbmc.addon.metadata">
-    <summary lang="de">Lädt logs zu xbmclogs.com hoch</summary>
-    <summary lang="en">Uploads your logs to xbmclogs.com</summary>
-    <description lang="de">Dieses Add-on lädt deine Logfiles auf www.xbmclogs.com hoch[CR]Du wirst eine Email mit Links zu deinen Logfiles erhalten.</description>
-    <description lang="en">This Addon uploads your logs to xbmclogs.com[CR]You will receive an email with seperate links to the uploaded logfiles</description>
-<platform>all</platform>
-  </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="de">Lädt logs zu xbmclogs.com hoch</summary>
+        <summary lang="en">Uploads your logs to xbmclogs.com</summary>
+        <description lang="de">Dieses Add-on lädt deine Logfiles auf www.xbmclogs.com hoch[CR]Du wirst eine Email mit Links zu deinen Logfiles erhalten.</description>
+        <description lang="en">This Addon uploads your logs to xbmclogs.com[CR]You will receive an email with seperate links to the uploaded logfiles</description>
+        <platform>all</platform>
+    </extension>
 </addon>
