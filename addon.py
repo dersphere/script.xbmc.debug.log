@@ -115,7 +115,10 @@ class LogUploader(object):
 
     def __get_logs(self):
         if xbmc.getCondVisibility('system.platform.osx'):
-            log_path = os.path.join(os.path.expanduser('~'), 'Library/Logs')
+            if xbmc.getCondVisibility('system.platform.atv2'):
+                log_path = '/var/mobile/Library/Preferences'
+            else:
+                log_path = os.path.join(os.path.expanduser('~'), 'Library/Logs')
             crashlog_path = os.path.join(os.path.expanduser('~'),
                                          'Library/Logs/CrashReporter')
             crashfile_match = 'XBMC'
