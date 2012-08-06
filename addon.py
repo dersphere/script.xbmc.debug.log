@@ -135,6 +135,10 @@ class LogUploader(object):
             log_path = xbmc.translatePath('special://home/temp')
             crashlog_path = os.path.expanduser('~')
             crashfile_match = 'xbmc_crashlog'
+        elif xbmc.getCondVisibility('system.platform.android'):
+            log_path = '/data/data/org.xbmc.xbmc/cache/temp/'
+            crashlog_path = None
+            crashfile_match = None
         else:
             # we are on an unknown OS and need to fix that here
             raise Exception('UNHANDLED OS')
