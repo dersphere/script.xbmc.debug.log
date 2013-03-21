@@ -40,8 +40,10 @@ class LogUploader(object):
             if self.ask_upload(logfile['title']):
                 paste_id = self.upload_file(logfile['path'])
                 if paste_id:
-                    uploaded_logs.append({'paste_id': paste_id,
-                                          'title': logfile['title']})
+                    uploaded_logs.append({
+                        'paste_id': paste_id,
+                        'title': logfile['title']
+                    })
                     self.report_msg(paste_id)
         if uploaded_logs and self.email_address:
             self.report_mail(self.email_address, uploaded_logs)
@@ -57,11 +59,12 @@ class LogUploader(object):
         self.__log('reading log...')
         file_content = open(filepath, 'r').read()
         self.__log('starting upload "%s"...' % filepath)
-        post_dict = {'paste_data': file_content,
-                     'api_submit': True,
-                     'mode': 'xml',
-                     'paste_lang': 'xbmc'
-                    }
+        post_dict = {
+            'paste_data': file_content,
+            'api_submit': True,
+            'mode': 'xml',
+            'paste_lang': 'xbmc'
+        }
         post_data = urllib.urlencode(post_dict)
         req = urllib2.Request(UPLOAD_URL, post_data)
         response = urllib2.urlopen(req).read()
