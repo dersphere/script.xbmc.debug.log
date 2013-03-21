@@ -59,11 +59,9 @@ class LogUploader(object):
         self.__log('starting upload "%s"...' % filepath)
         post_dict = {'paste_data': file_content,
                      'api_submit': True,
-                     'mode': 'xml'}
-        if filepath.endswith('.log'):
-            post_dict['paste_lang'] = 'xbmc'
-        elif filepath.endswith('.xml'):
-            post_dict['paste_lang'] = 'advancedsettings'
+                     'mode': 'xml',
+                     'paste_lang': 'xbmc'
+                    }
         post_data = urllib.urlencode(post_dict)
         req = urllib2.Request(UPLOAD_URL, post_data)
         response = urllib2.urlopen(req).read()
