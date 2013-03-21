@@ -9,7 +9,6 @@
     <string id="30002">URL: [B]%s[/B]</string>
     <string id="30003">No email will be sent (No email is configured)</string>
     <string id="30004">Email will be sent to: %s</string>
-    <string id="30018">You will receive an email to %s</string>
 
     <!-- Settings -->
     <string id="31000">Email address</string>

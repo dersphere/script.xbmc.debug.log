@@ -17,20 +17,20 @@ STRINGS = {
     'upload_id': 30001,
     'upload_url': 30002,
     'no_email_set': 30003,
-    'you_would_get_an_email': 30005,
-    'with_a_link_to_your': 30006,
-    'uploaded_xbmc_logfile': 30007,
-    'dont_want': 30008,
-    'open_settings': 30009,
-    'you_would_get_an_email': 30010,
-    'with_a_link_to_your': 30011,
-    'uploaded_xbmc_logfile': 30012,
-    'dont_want': 30013,
-    'open_settings': 30014,
-    'wont_get_mail': 30015,
-    'do_you_want_to_upload': 30016,
-    'logfile_to_xbmclogs_com': 30017,
-    'will_receive_email_to': 30018,
+    'email_will_sent_to': 30004,
+    #'you_would_get_an_email': 30005,
+    #'with_a_link_to_your': 30006,
+    #'uploaded_xbmc_logfile': 30007,
+    #'dont_want': 30008,
+    #'open_settings': 30009,
+    #'you_would_get_an_email': 30010,
+    #'with_a_link_to_your': 30011,
+    #'uploaded_xbmc_logfile': 30012,
+    #'dont_want': 30013,
+    #'open_settings': 30014,
+    #'wont_get_mail': 30015,
+    #'do_you_want_to_upload': 30016,
+    #'logfile_to_xbmclogs_com': 30017,
 }
 
 REPLACES = (
@@ -68,7 +68,7 @@ def get_email_address():
 
 def ask_upload(email_address):
     if email_address:
-        line3 = _('will_receive_email_to') % email_address
+        line3 = _('email_will_sent_to') % email_address
     else:
         line3 = _('wont_get_mail')
     ok = xbmcgui.Dialog().yesno(
