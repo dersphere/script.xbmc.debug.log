@@ -119,8 +119,14 @@ def report_dialog(paste_id):
     url = UPLOAD_LINK % paste_id
     Dialog = xbmcgui.Dialog()
     msg1 = _('upload_id') % paste_id
-    msg2 = _('upload_url') % url
-    return Dialog.ok(ADDON_TITLE, msg1, '', msg2)
+    msg3 = _('upload_url') % url
+    return Dialog.ok(ADDON_TITLE, msg1, '', msg3)
+
+
+def fail_dialog():
+    Dialog = xbmcgui.Dialog()
+    msg1 = _('upload_failed')
+    return Dialog.ok(ADDON_TITLE, msg1)
 
 
 def _post_data(url, post_dict):
@@ -153,6 +159,9 @@ def main():
         return
     log_content = get_log_content()
     paste_id = upload_log_content(log_content)
+    if not paste_id:
+        fail_dialog()
+        return
     if email_address:
         report_mail(email_address, paste_id)
     report_dialog(paste_id)
