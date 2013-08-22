@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.xbmc.debug.log"
-       name="XBMC Log Uploader"
-       version="12.0.0"
-       provider-name="Tristan Fischer (sphere@dersphere.de)">
+<addon id="script.xbmc.debug.log" name="XBMC Log Uploader" version="12.0.0" provider-name="Tristan Fischer (sphere@dersphere.de)">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py"/>
     <extension point="xbmc.addon.metadata">
         <language></language>
-       <summary lang="be">Uploads your logs to xbmclogs.com</summary>
+        <platform>all</platform>
+        <summary lang="be">Uploads your logs to xbmclogs.com</summary>
         <summary lang="ca">Puja els vostres registres a xbmclogs.com</summary>
         <summary lang="da">Indsender dine logfiler til xbmclogs.com</summary>
         <summary lang="de">Lädt logs zu xbmclogs.com hoch</summary>
@@ -44,6 +42,5 @@
         <description lang="ru">Этот плагин выгрузит Ваши логи на xbmclogs.com[CR]Вы получите по почте раздельные ссылки на загруженные лог-файлы</description>
         <description lang="sv">Detta tillägg laddar upp dina loggar till xbmclogs.com[CR]DU får ett epostmeddelande med separata länkar till dom uppladdade loggfilerna</description>
         <description lang="zh">此插件将上传您的日志到xbmclogs.com[CR]你会收到一份邮件内含您上传日志文件的链接</description>
-        <platform>all</platform>
     </extension>
 </addon>
