@@ -145,7 +145,7 @@ class LogUploader(object):
         log_old = os.path.join(log_path, 'xbmc.old.log')
         # check for XBMC crashlogs
         log_crash = None
-        if crashlog_path and crashfile_match:
+        if crashlog_path and os.path.isdir(crashlog_path) and crashfile_match:
             crashlog_files = [s for s in os.listdir(crashlog_path)
                               if os.path.isfile(os.path.join(crashlog_path, s))
                               and crashfile_match in s]
