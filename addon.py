@@ -3,7 +3,7 @@ import re
 import sys
 import urllib
 import urllib2
-from xbmc import getCondVisibility as condtition, translatePath as translate
+from xbmc import getCondVisibility as condition, translatePath as translate
 import xbmcaddon
 import xbmcgui
 
@@ -128,16 +128,16 @@ class LogUploader(object):
         log_path = translate('special://logpath')
         crashlog_path = None
         crashfile_match = None
-        if condtition('system.platform.osx') or condtition('system.platform.ios'):
+        if condition('system.platform.osx') or condition('system.platform.ios'):
             crashlog_path = os.path.join(
                 os.path.expanduser('~'),
                 'Library/Logs/CrashReporter'
             )
             crashfile_match = 'XBMC'
-        elif condtition('system.platform.windows'):
+        elif condition('system.platform.windows'):
             crashlog_path = log_path
             crashfile_match = '.dmp'
-        elif condtition('system.platform.linux'):
+        elif condition('system.platform.linux'):
             crashlog_path = os.path.expanduser('~')
             crashfile_match = 'xbmc_crashlog'
         # get fullpath for xbmc.log and xbmc.old.log
