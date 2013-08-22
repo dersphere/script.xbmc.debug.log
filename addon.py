@@ -9,6 +9,7 @@ import xbmcgui
 
 addon = xbmcaddon.Addon(id='script.xbmc.debug.log')
 ADDON_TITLE = addon.getAddonInfo('name')
+ADDON_VERSION = addon.getAddonInfo('version')
 
 DEBUG = False
 
@@ -74,7 +75,8 @@ class LogUploader(object):
             'paste_lang': 'xbmc'
         }
         post_data = urllib.urlencode(post_dict)
-        req = urllib2.Request(UPLOAD_URL, post_data)
+        headers = {'User-Agent': '%s-%s' % (ADDON_TITLE, ADDON_VERSION)}
+        req = urllib2.Request(UPLOAD_URL, post_data, headers)
         response = urllib2.urlopen(req).read()
         self.__log('upload done.')
         r_id = re.compile('<id>([0-9]+)</id>', re.DOTALL)
