@@ -7,6 +7,11 @@
     <extension point="xbmc.addon.metadata">
         <language></language>
         <platform>all</platform>
+        <website>http://xbmcLogs.com</website>
+        <source>https://github.com/dersphere/script.xbmc.debug.log</source>
+        <forum>http://forum.xbmc.org/showthread.php?tid=127108</forum>
+        <email>sphere@dersphere.de</email>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <summary lang="be">Uploads your logs to xbmclogs.com</summary>
         <summary lang="ca">Puja els vostres registres a xbmclogs.com</summary>
         <summary lang="da">Indsender dine logfiler til xbmclogs.com</summary>
