@@ -22,6 +22,12 @@ STRINGS = {
 UPLOAD_LINK = 'http://xbmclogs.com/show.php?id=%s'
 UPLOAD_URL = 'http://xbmclogs.com/'
 
+REPLACES = (
+    ('//.+?:.+?@', '//USER:PASSWORD@'),
+    ('<user>.+?</user>', '<user>USER</user>'),
+    ('<pass>.+?</pass>', '<pass>PASSWORD</pass>'),
+)
+
 
 # Open Settings on first run
 if not addon.getSetting('already_shown') == 'true':
@@ -58,6 +64,8 @@ class LogUploader(object):
     def upload_file(self, filepath):
         self.__log('reading log...')
         file_content = open(filepath, 'r').read()
+        for pattern, repl in REPLACES:
+            file_content = re.sub(pattern, repl, file_content)
         self.__log('starting upload "%s"...' % filepath)
         post_dict = {
             'paste_data': file_content,
