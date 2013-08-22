@@ -1,3 +1,8 @@
+12.0.1 (unreleased)
+ - fixed potential issue on OSX
+ - hide common username/password patterns in log files
+ - updated translations
+
 12.0.0 (05.01.2013)
  - use new method for log-file path retrieval
  - updated translations
