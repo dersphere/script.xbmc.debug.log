@@ -1,37 +1,27 @@
 import os
 import re
+import sys
 import urllib
 import urllib2
-from xbmc import getCondVisibility as condtition, translatePath as translate
+from xbmc import getCondVisibility as condition, translatePath as translate
 import xbmcaddon
 import xbmcgui
 
 addon = xbmcaddon.Addon(id='script.xbmc.debug.log')
-
 ADDON_TITLE = addon.getAddonInfo('name')
 ADDON_VERSION = addon.getAddonInfo('version')
-UPLOAD_LINK = 'http://xbmclogs.com/show.php?id=%s'
-UPLOAD_URL = 'http://xbmclogs.com/'
+
+DEBUG = False
 
 STRINGS = {
+    'do_upload': 30000,
     'upload_id': 30001,
     'upload_url': 30002,
     'no_email_set': 30003,
-    'email_will_sent_to': 30004,
-    #'you_would_get_an_email': 30005,
-    #'with_a_link_to_your': 30006,
-    #'uploaded_xbmc_logfile': 30007,
-    #'dont_want': 30008,
-    #'open_settings': 30009,
-    #'you_would_get_an_email': 30010,
-    #'with_a_link_to_your': 30011,
-    #'uploaded_xbmc_logfile': 30012,
-    #'dont_want': 30013,
-    #'open_settings': 30014,
-    #'wont_get_mail': 30015,
-    #'do_you_want_to_upload': 30016,
-    #'logfile_to_xbmclogs_com': 30017,
+    'email_sent': 30004
 }
+UPLOAD_LINK = 'http://xbmclogs.com/show.php?id=%s'
+UPLOAD_URL = 'http://xbmclogs.com/'
 
 REPLACES = (
     ('//.+?:.+?@', '//USER:PASSWORD@'),
@@ -40,132 +30,163 @@ REPLACES = (
 )
 
 
-class NetworkError(Exception):
-    pass
+# Open Settings on first run
+if not addon.getSetting('already_shown') == 'true':
+    addon.openSettings()
+    addon.setSetting('already_shown', 'true')
 
 
-def get_email_address():
-    if addon.getSetting('dont_ask_email') == 'true':
-        log('dont_ask_email enabled')
-        return
-    email_address = addon.getSetting('email')
-    while not email_address:
-        try_again = xbmcgui.Dialog().yesno(
-            heading=_('no_email_set'),
-            line1=_('you_would_get_an_email'),
-            line2=_('with_a_link_to_your'),
-            line3=_('uploaded_xbmc_logfile'),
-            nolabel=_('dont_want'),
-            yeslabel=_('open_settings')
-        )
-        if not try_again:
-            return
-        addon.openSettings()
-        email_address = addon.getSetting('email')
-    log('got email address')
-    return email_address
+class LogUploader(object):
 
+    def __init__(self):
+        self.__log('started')
+        self.get_settings()
+        found_logs = self.__get_logs()
+        uploaded_logs = []
+        for logfile in found_logs:
+            if self.ask_upload(logfile['title']):
+                paste_id = self.upload_file(logfile['path'])
+                if paste_id:
+                    uploaded_logs.append({
+                        'paste_id': paste_id,
+                        'title': logfile['title']
+                    })
+                    self.report_msg(paste_id)
+        if uploaded_logs and self.email_address:
+            self.report_mail(self.email_address, uploaded_logs)
+            pass
 
-def ask_upload(email_address):
-    if email_address:
-        line3 = _('email_will_sent_to') % email_address
-    else:
-        line3 = _('wont_get_mail')
-    ok = xbmcgui.Dialog().yesno(
-        heading=ADDON_TITLE,
-        line1=_('do_you_want_to_upload'),
-        line2=_('logfile_to_xbmclogs_com'),
-        line3=line3,
-    )
-    return ok
+    def get_settings(self):
+        self.email_address = addon.getSetting('email')
+        self.__log('settings: len(email)=%d' % len(self.email_address))
+        self.skip_oldlog = addon.getSetting('skip_oldlog') == 'true'
+        self.__log('settings: skip_oldlog=%s' % self.skip_oldlog)
 
-
-def get_log_content():
-    log_path = translate('special://logpath')
-    log_file_path = os.path.join(log_path, 'xbmc.log')
-    with open(log_file_path, 'r') as f:
-        log_content = f.read()
-    for pattern, repl in REPLACES:
-        log_content = re.sub(pattern, repl, log_content)
-    return log_content
-
-
-def upload_log_content(log_content):
-    post_dict = {
-        'paste_data': log_content,
-        'api_submit': True,
-        'mode': 'xml',
-        'paste_lang': 'xbmc'
-    }
-    response = _post_data(UPLOAD_URL, post_dict)
-    upload_re = re.compile('<id>([0-9]+)</id>', re.DOTALL)
-    match = re.search(upload_re, response)
-    if match:
-        return match.group(1)
-    else:
-        log('Upload failed with response: %s' % repr(response))
-
-
-def report_mail(email_address, paste_id):
-    url = 'http://xbmclogs.com/xbmc-addon.php'
-    post_dict = {
-        'email': email_address,
-        'xbmclog_id': paste_id
-    }
-    response = _post_data(url, post_dict)
-
-
-def report_dialog(paste_id):
-    url = UPLOAD_LINK % paste_id
-    Dialog = xbmcgui.Dialog()
-    msg1 = _('upload_id') % paste_id
-    msg3 = _('upload_url') % url
-    return Dialog.ok(ADDON_TITLE, msg1, '', msg3)
-
-
-def fail_dialog():
-    Dialog = xbmcgui.Dialog()
-    msg1 = _('upload_failed')
-    return Dialog.ok(ADDON_TITLE, msg1)
-
-
-def _post_data(url, post_dict):
-    headers = {'User-Agent': '%s-%s' % (ADDON_TITLE, ADDON_VERSION)}
-    post_data = urllib.urlencode(post_dict)
-    req = urllib2.Request(url, post_data, headers)
-    try:
+    def upload_file(self, filepath):
+        self.__log('reading log...')
+        file_content = open(filepath, 'r').read()
+        for pattern, repl in REPLACES:
+            file_content = re.sub(pattern, repl, file_content)
+        self.__log('starting upload "%s"...' % filepath)
+        post_dict = {
+            'paste_data': file_content,
+            'api_submit': True,
+            'mode': 'xml',
+            'paste_lang': 'xbmc'
+        }
+        post_data = urllib.urlencode(post_dict)
+        headers = {'User-Agent': '%s-%s' % (ADDON_TITLE, ADDON_VERSION)}
+        req = urllib2.Request(UPLOAD_URL, post_data, headers)
         response = urllib2.urlopen(req).read()
-    except urllib2.HTTPError, error:
-        raise NetworkError('HTTPError: %s' % error)
-    return response
+        self.__log('upload done.')
+        r_id = re.compile('<id>([0-9]+)</id>', re.DOTALL)
+        m_id = re.search(r_id, response)
+        if m_id:
+            paste_id = m_id.group(1)
+            self.__log('paste_id=%s' % paste_id)
+            return paste_id
+        else:
+            self.__log('upload failed with response: %s' % repr(response))
 
+    def ask_upload(self, logfile):
+        Dialog = xbmcgui.Dialog()
+        msg1 = _('do_upload') % logfile
+        if self.email_address:
+            msg2 = _('email_sent') % self.email_address
+        else:
+            msg2 = _('no_email_set')
+        return Dialog.yesno(ADDON_TITLE, msg1, '', msg2)
 
-def log(msg):
-    xbmc.log(u'%s: %s' % (ADDON_TITLE, msg))
+    def report_msg(self, paste_id):
+        url = UPLOAD_LINK % paste_id
+        Dialog = xbmcgui.Dialog()
+        msg1 = _('upload_id') % paste_id
+        msg2 = _('upload_url') % url
+        return Dialog.ok(ADDON_TITLE, msg1, '', msg2)
+
+    def report_mail(self, mail_address, uploaded_logs):
+        url = 'http://xbmclogs.com/xbmc-addon.php'
+        if not mail_address:
+            raise Exception('No Email set!')
+        post_dict = {'email': mail_address}
+        for logfile in uploaded_logs:
+            if logfile['title'] == 'xbmc.log':
+                post_dict['xbmclog_id'] = logfile['paste_id']
+            elif logfile['title'] == 'xbmc.old.log':
+                post_dict['oldlog_id'] = logfile['paste_id']
+            elif logfile['title'] == 'crash.log':
+                post_dict['crashlog_id'] = logfile['paste_id']
+        post_data = urllib.urlencode(post_dict)
+        if DEBUG:
+            print post_data
+        req = urllib2.Request(url, post_data)
+        response = urllib2.urlopen(req).read()
+        if DEBUG:
+            print response
+
+    def __get_logs(self):
+        log_path = translate('special://logpath')
+        crashlog_path = None
+        crashfile_match = None
+        if condition('system.platform.osx') or condition('system.platform.ios'):
+            crashlog_path = os.path.join(
+                os.path.expanduser('~'),
+                'Library/Logs/CrashReporter'
+            )
+            crashfile_match = 'XBMC'
+        elif condition('system.platform.windows'):
+            crashlog_path = log_path
+            crashfile_match = '.dmp'
+        elif condition('system.platform.linux'):
+            crashlog_path = os.path.expanduser('~')
+            crashfile_match = 'xbmc_crashlog'
+        # get fullpath for xbmc.log and xbmc.old.log
+        log = os.path.join(log_path, 'xbmc.log')
+        log_old = os.path.join(log_path, 'xbmc.old.log')
+        # check for XBMC crashlogs
+        log_crash = None
+        if crashlog_path and os.path.isdir(crashlog_path) and crashfile_match:
+            crashlog_files = [s for s in os.listdir(crashlog_path)
+                              if os.path.isfile(os.path.join(crashlog_path, s))
+                              and crashfile_match in s]
+            if crashlog_files:
+                # we have crashlogs, get fullpath from the last one by time
+                crashlog_files = self.__sort_files_by_date(crashlog_path,
+                                                           crashlog_files)
+                log_crash = os.path.join(crashlog_path, crashlog_files[-1])
+        found_logs = []
+        if os.path.isfile(log):
+            found_logs.append({
+                'title': 'xbmc.log',
+                'path': log
+            })
+        if not self.skip_oldlog and os.path.isfile(log_old):
+            found_logs.append({
+                'title': 'xbmc.old.log',
+                'path': log_old
+            })
+        if log_crash and os.path.isfile(log_crash):
+            found_logs.append({
+                'title': 'crash.log',
+                'path': log_crash
+            })
+        return found_logs
+
+    def __sort_files_by_date(self, path, files):
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(path, f)))
+        return files
+
+    def __log(self, msg):
+        xbmc.log(u'%s: %s' % (ADDON_TITLE, msg))
 
 
 def _(string_id):
     if string_id in STRINGS:
         return addon.getLocalizedString(STRINGS[string_id])
     else:
-        log('String is missing: %s' % string_id)
+        self.__log('String is missing: %s' % string_id)
         return string_id
 
 
-def main():
-    email_address = get_email_address()
-    if not ask_upload(email_address):
-        log('aborted, user doesn\'t want')
-        return
-    log_content = get_log_content()
-    paste_id = upload_log_content(log_content)
-    if not paste_id:
-        fail_dialog()
-        return
-    if email_address:
-        report_mail(email_address, paste_id)
-    report_dialog(paste_id)
-
-
 if __name__ == '__main__':
-    main()
+    Uploader = LogUploader()

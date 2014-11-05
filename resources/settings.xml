@@ -7,4 +7,5 @@
     <setting type="lsep" label="32004"/>
     <setting type="lsep" label=""/>
     <setting id="email" type="text" label="31000"/>
+    <setting id="skip_oldlog" type="bool" label="31001" default="true"/>
 </settings>
