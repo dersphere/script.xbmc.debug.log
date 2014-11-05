@@ -1,9 +1,8 @@
 import os
 import re
-import sys
 import urllib
 import urllib2
-from xbmc import getCondVisibility as condition, translatePath as translate
+from xbmc import getCondVisibility as condition, translatePath as translate, log as xbmc_log
 import xbmcaddon
 import xbmcgui
 
@@ -177,14 +176,14 @@ class LogUploader(object):
         return files
 
     def __log(self, msg):
-        xbmc.log(u'%s: %s' % (ADDON_TITLE, msg))
+        xbmc_log(u'%s: %s' % (ADDON_TITLE, msg))
 
 
 def _(string_id):
     if string_id in STRINGS:
         return addon.getLocalizedString(STRINGS[string_id])
     else:
-        self.__log('String is missing: %s' % string_id)
+        xbmc_log('String is missing: %s' % string_id)
         return string_id
 
 
