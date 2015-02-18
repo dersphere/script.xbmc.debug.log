@@ -21,7 +21,7 @@ STRINGS = {
     'email_sent': 30004
 }
 BASE_URL = 'http://sandbox.xbmclogs.com'
-UPLOAD_LINK = BASE_URL + '/show.php?id=%s'
+UPLOAD_LINK = BASE_URL + '/%s'
 UPLOAD_URL = BASE_URL + '/api/json/create'
 EMAIL_URL = BASE_URL + '/xbmc-addon.php'
 
@@ -72,7 +72,7 @@ class LogUploader(object):
         self.__log('starting upload "%s"...' % filepath)
         post_dict = {
             'data': file_content,
-            'project': 'Kodi',
+            'project': 'www',
             'language': 'text'
         }
         post_data = json.dumps(post_dict)
