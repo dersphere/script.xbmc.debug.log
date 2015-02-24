@@ -20,7 +20,7 @@ STRINGS = {
     'no_email_set': 30003,
     'email_sent': 30004
 }
-BASE_URL = 'http://sandbox.xbmclogs.com'
+BASE_URL = 'http://xbmclogs.com'
 UPLOAD_LINK = BASE_URL + '/%s'
 UPLOAD_URL = BASE_URL + '/api/json/create'
 EMAIL_URL = BASE_URL + '/xbmc-addon.php'
@@ -73,7 +73,8 @@ class LogUploader(object):
         post_dict = {
             'data': file_content,
             'project': 'www',
-            'language': 'text'
+            'language': 'text',
+            'expire': 1209600,
         }
         post_data = json.dumps(post_dict)
         headers = {
